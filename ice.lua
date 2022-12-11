@@ -168,9 +168,11 @@ function library.new(title: string)
 		Size = UDim2.new(0, 120, 0, 10)
 	}, SideBar)
 	
-	library:CreateObject("UIListLayout", {
+	local ListLayout = library:CreateObject("UIListLayout", {
 		Padding = UDim.new(0, 5)
 	}, TabContainer)
+	
+	ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	
 	library:RoundCorners(SideBar, 5)
 	
