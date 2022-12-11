@@ -194,6 +194,7 @@ function library.new(title: string)
 		local SectionContainer = library:CreateObject("ScrollingFrame", {
 			Name = "SectionContainer",
 			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
 			Position = UDim2.new(0, 130, 0, 50),
 			Size = UDim2.new(0, 310, 0, 190),
 			AutomaticCanvasSize = Enum.AutomaticSize.Y,
@@ -274,6 +275,8 @@ function library.new(title: string)
 			Button.Position = UDim2.new(0, 225, 0, 0)
 			Button.Size = UDim2.new(0, 75, 0, 30)
 			
+			Container.LayoutOrder = #SectionContainer:GetChildren()
+			
 			return Container
 		end
 		
@@ -338,6 +341,8 @@ function library.new(title: string)
 				TextScaled = true,
 				TextXAlignment = Enum.TextXAlignment.Left
 			}, Container)
+			
+			Container.LayoutOrder = #SectionContainer:GetChildren()
 
 			return Container
 		end
@@ -383,7 +388,9 @@ function library.new(title: string)
 				TextScaled = true,
 				TextXAlignment = Enum.TextXAlignment.Left
 			}, Container)
-
+			
+			Container.LayoutOrder = #SectionContainer:GetChildren()
+			
 			return Container
 		end
 		
