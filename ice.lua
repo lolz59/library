@@ -211,6 +211,12 @@ function library.new(title: string)
 		
 		section.Frame = SectionContainer
 		
+		SectionContainer.ChildAdded:Connect(function(object)
+			if object:IsA("GuiObject") then
+				object.LayoutOrder = #SectionContainer:GetChildren()
+			end
+		end)
+		
 		function section:CreateTextLabel(text: string)
 			local Label = library:CreateObject("TextLabel", {
 				Name = text .. "Label",
