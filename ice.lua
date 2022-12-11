@@ -513,3 +513,5 @@ function library.new(title: string)
 	
 	return menu
 end
+
+return library
