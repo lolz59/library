@@ -213,6 +213,7 @@ function library.new(title: string)
 		
 		SectionContainer.ChildAdded:Connect(function(object)
 			if object:IsA("GuiObject") then
+				task.wait()
 				object.LayoutOrder = #SectionContainer:GetChildren()
 			end
 		end)
