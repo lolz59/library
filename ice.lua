@@ -95,7 +95,7 @@ function library.new(title: string)
 		Name = "ToggleCircle",
 		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
 		Size = UDim2.new(0, 40, 0, 40),
-		Position = UDim2.new(0, 50, 0, 50),
+		Position = UDim2.new(0.5, 0, 0, 50),
 		Text = "=", -- Hamburger icon
 		TextColor3 = ThemeColor,
 		Font = Enum.Font.SourceSansBold,
