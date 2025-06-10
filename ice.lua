@@ -85,6 +85,7 @@ function library.new(title: string)
 		Name = title,
 		BackgroundColor3 = Color3.fromRGB(50, 50, 50),
 		Size = UDim2.new(0, 450, 0, 250)
+		Position = UDim2.new(0.5, 0, 0.2, 0)
 	}, ScreenGui)
 
 	library:RoundCorners(Main, 5)
@@ -95,7 +96,7 @@ function library.new(title: string)
 		Name = "ToggleCircle",
 		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
 		Size = UDim2.new(0, 40, 0, 40),
-		Position = UDim2.new(0.5, 0, 0, 20),
+		Position = UDim2.new(0.6, 0, 0, 10),
 		Text = "=", -- Hamburger icon
 		TextColor3 = ThemeColor,
 		Font = Enum.Font.SourceSansBold,
