@@ -84,7 +84,7 @@ function library.new(title: string)
 	local Main = library:CreateObject("Frame", {
 		Name = title,
 		BackgroundColor3 = Color3.fromRGB(50, 50, 50),
-		Size = UDim2.new(0, 450, 0, 250)
+		Size = UDim2.new(0, 450, 0, 250),
 		Position = UDim2.new(0.5, 0, 0.2, 0)
 	}, ScreenGui)
 
