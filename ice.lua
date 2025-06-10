@@ -156,6 +156,14 @@ end)
 
 Target:CreateButton("View target", function()
 	if states.TrollTarget then
+		for i = 1, 100  do
+			GameEvent:FireServer("BanHacker", {states.TrollTarget})
+		end
+	end
+end)
+
+Target:CreateButton("View target", function()
+	if states.TrollTarget then
 		local char = states.TrollTarget.Character
 		if char then
 			local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Head")
