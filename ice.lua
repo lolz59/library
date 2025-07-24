@@ -85,18 +85,18 @@ function library.new(title: string)
 		Name = title,
 		BackgroundColor3 = Color3.fromRGB(50, 50, 50),
 		Size = UDim2.new(0, 450, 0, 250),
-		Position = UDim2.new(0.2, 0, 0.2, 0)
+		Position = UDim2.new(0.5, 0, 0.2, 0)
 	}, ScreenGui)
 
 	library:RoundCorners(Main, 5)
 	library:SetDraggable(Main)
-	
+
 	-- Toggle Circle
 	local ToggleCircle = library:CreateObject("TextButton", {
 		Name = "ToggleCircle",
 		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
 		Size = UDim2.new(0, 40, 0, 40),
-		Position = UDim2.new(0.6, 0, 0, 0),
+		Position = UDim2.new(0.6, 0, 0, 10),
 		Text = "=", -- Hamburger icon
 		TextColor3 = ThemeColor,
 		Font = Enum.Font.SourceSansBold,
@@ -420,11 +420,14 @@ function library.new(title: string)
 			return Container
 		end
 
-		function section:CreateSlider(text: string, max: number, callback)
+		function section:CreateSlider(text: string, max: number, default: number?, increment: number?, callback)
+			local defaultValue = default or 0
+			local step = increment or 1
+
 			local Container = library:CreateObject("Frame", {
 				Name = text .. "Slider",
 				BackgroundTransparency = 1,
-				Size = UDim2.new(0, 300, 0, 40)
+				Size = UDim2.new(0, 300, 0, 50)
 			}, SectionContainer)
 
 			local Label = library:CreateObject("TextLabel", {
@@ -444,9 +447,9 @@ function library.new(title: string)
 				Position = UDim2.new(0, 150, 0, 0),
 				Size = UDim2.new(0, 150, 0, 20),
 				Font = Enum.Font.SourceSans,
-				PlaceholderText = "0",
-				Text = "0",
-				TextColor3 = Color3.new(ThemeColor.R * 0.75, ThemeColor.G * 0.75, ThemeColor.B * 0.75),
+				PlaceholderText = tostring(defaultValue),
+				Text = tostring(defaultValue),
+				TextColor3 = ThemeColor:Lerp(Color3.new(0, 0, 0), 0.5),
 				TextScaled = true,
 				TextXAlignment = Enum.TextXAlignment.Right
 			}, Container)
@@ -455,87 +458,75 @@ function library.new(title: string)
 				Name = "Bar",
 				BackgroundColor3 = Color3.fromRGB(40, 40, 40),
 				Position = UDim2.new(0, 0, 0, 30),
-				Size = UDim2.new(1, 0, 0, 5)
+				Size = UDim2.new(1, 0, 0, 8)
 			}, Container)
+			library:RoundCorners(Bar, 8)
 
-			library:RoundCorners(Bar, 15)
-
-			local Amount = library:CreateObject("Frame", {
+			local Fill = library:CreateObject("Frame", {
 				Name = "Amount",
 				BackgroundColor3 = Color3.new(1, 1, 1),
 				Size = UDim2.new(0, 0, 1, 0)
 			}, Bar)
+			library:RoundCorners(Fill, 8)
 
-			library:RoundCorners(Amount, 15)
-
-			local SlideButton: TextButton = library:CreateObject("TextButton", {
+			local Handle = library:CreateObject("ImageButton", {
 				Name = "Slide",
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				BackgroundColor3 = Color3.new(1, 1, 1),
-				Position = UDim2.new(1, 0, 0.5, 0),
-				Size = UDim2.new(0, 15, 0, 15),
-				Text = ""
-			}, Amount)
+				Position = UDim2.new(0, 0, 0.5, 0),
+				Size = UDim2.new(0, 24, 0, 24),
+				Image = "", -- Optional: icon
+				AutoButtonColor = false
+			}, Fill)
+			library:RoundCorners(Handle, 12)
 
-			library:RoundCorners(SlideButton, 15)
+			local function updateSlider(value: number)
+				value = math.clamp(math.floor(value / step + 0.5) * step, 0, max)
+				local percent = value / max
+				local px = percent * Bar.AbsoluteSize.X
 
-			local MovingSlider = false
-			local SnapAmount = Bar.AbsoluteSize.X / max
+				Handle.Position = UDim2.new(0, px, 0.5, 0)
+				Fill.Size = UDim2.new(0, px, 1, 0)
+				ValueBox.Text = tostring(value)
+				callback(value)
+			end
 
-			SlideButton.MouseButton1Down:Connect(function()
-				MovingSlider = true
-			end)
+			local dragging = false
 
-			SlideButton.MouseButton1Up:Connect(function()
-				MovingSlider = false
-			end)
+			local function onInputMoved(input)
+				if not dragging or input.UserInputType ~= Enum.UserInputType.Touch then return end
+				local barX = Bar.AbsolutePosition.X
+				local posX = math.clamp(input.Position.X - barX, 0, Bar.AbsoluteSize.X)
+				local percent = posX / Bar.AbsoluteSize.X
+				local value = percent * max
+				updateSlider(value)
+			end
 
-			Mouse.Button1Up:Connect(function()
-				MovingSlider = false
-			end)
-
-			Mouse.Move:Connect(function()
-				if MovingSlider then
-					local xOffset = math.floor((Mouse.X - Bar.AbsolutePosition.X) / SnapAmount + 0.5) * SnapAmount
-					local xOffsetClamped = math.clamp(xOffset, 0, Bar.AbsoluteSize.X)
-
-					TweenService:Create(SlideButton, TweenInfo.new(0.1), {Position = UDim2.new(0, xOffsetClamped, Bar.Position.Y)}):Play()
-					TweenService:Create(Amount, TweenInfo.new(0.1), {Size = UDim2.new(0, xOffsetClamped, 1, 0)}):Play()
-
-					local RoundedAbsSize = math.floor(Bar.AbsoluteSize.X / SnapAmount + 0.5) * SnapAmount
-					local RoundedOffsetClamped = math.floor(xOffsetClamped / SnapAmount + 0.5) * SnapAmount
-
-					local Value = RoundedOffsetClamped / RoundedAbsSize * max
-
-					callback(Value)
-
-					ValueBox.Text = Value
+			Handle.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					dragging = true
 				end
 			end)
 
-			ValueBox.FocusLost:Connect(function(entered)
-				if not entered then return end
-
-				local input = tonumber(ValueBox.Text)
-
-				if input then
-					local InputClamped = math.clamp(input, 0, max)
-
-					local xOffset = InputClamped / max * math.floor(Bar.AbsoluteSize.X / SnapAmount + 0.5) * SnapAmount
-					local xOffsetRounded = math.floor(xOffset / SnapAmount + 0.5) * SnapAmount
-					local xOffsetClamped = math.clamp(xOffsetRounded, 0, Bar.AbsoluteSize.X)
-
-					local NewInput = xOffsetClamped / Bar.AbsoluteSize.X * max
-
-					TweenService:Create(SlideButton, TweenInfo.new(0.1), {Position = UDim2.new(0, xOffsetClamped, Bar.Position.Y)}):Play()
-					TweenService:Create(Amount, TweenInfo.new(0.1), {Size = UDim2.new(0, xOffsetClamped, 1, 0)}):Play()
-
-					callback(NewInput)
-
-					ValueBox.Text = NewInput
+			UserInputService.InputEnded:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					dragging = false
 				end
 			end)
 
+			UserInputService.InputChanged:Connect(onInputMoved)
+
+			ValueBox.FocusLost:Connect(function(enterPressed)
+				if enterPressed then
+					local input = tonumber(ValueBox.Text)
+					if input then
+						updateSlider(input)
+					end
+				end
+			end)
+
+			-- Initial state
+			updateSlider(defaultValue)
 			Container.LayoutOrder = #SectionContainer:GetChildren()
 
 			return Container
